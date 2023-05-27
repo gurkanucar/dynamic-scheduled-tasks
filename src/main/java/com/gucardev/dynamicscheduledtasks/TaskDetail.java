@@ -17,4 +17,5 @@ public class TaskDetail {
   private long time;
   private TimeType timeType;
   private LocalDateTime exactTime;
+  private LocalDateTime createdAt;
 }

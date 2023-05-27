@@ -25,11 +25,17 @@ public class TaskService {
   public CompletableFuture<Void> executeTask(TaskDetail taskDetails) {
     return CompletableFuture.runAsync(
         () -> {
-          log.info("task processed {}", taskDetails.getContent());
+          log.info(
+              "task processed: created at {} | content: {}",
+              taskDetails.getCreatedAt(),
+              taskDetails.getContent());
         });
   }
 
   public void scheduleTask(TaskDetail taskDetails) {
+
+    taskDetails.setCreatedAt(LocalDateTime.now());
+
     long delay = taskDetails.getTime();
     if (TimeType.MINUTES.equals(taskDetails.getTimeType())) {
       delay = delay * 60;
