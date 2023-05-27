@@ -34,7 +34,8 @@ public class TaskService {
     if (TimeType.MINUTES.equals(taskDetails.getTimeType())) {
       delay = delay * 60;
     } else if (TimeType.EXACT_TIME.equals(taskDetails.getTimeType())) {
-      delay = Duration.between(LocalDateTime.now(), taskDetails.getExactTime()).getSeconds();
+      Duration duration = Duration.between(LocalDateTime.now(), taskDetails.getExactTime());
+      delay = duration.isNegative() || duration.isZero() ? 0 : duration.getSeconds();
     }
     executorService.schedule(
         () -> {
