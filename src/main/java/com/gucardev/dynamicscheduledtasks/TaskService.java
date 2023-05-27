@@ -7,11 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 @Service
-@EnableAsync
 @Slf4j
 public class TaskService {
 
