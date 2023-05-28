@@ -1,4 +1,4 @@
-package com.gucardev.dynamicscheduledtasks;
+package com.gucardev.dynamicscheduledtasks.model;
 
 public enum TimeType {
   SECONDS,
