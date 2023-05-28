@@ -41,6 +41,6 @@ public class TaskDetail {
   private TimeType timeType;
 
   private long time;
-  private boolean isExecuted;
-  private boolean isUpdated;
+  private boolean executed;
+  private boolean updated;
 }
