@@ -1,4 +1,4 @@
-package com.gucardev.dynamicscheduledtasks;
+package com.gucardev.dynamicscheduledtasks.config;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
