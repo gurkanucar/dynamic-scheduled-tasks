@@ -44,10 +44,33 @@ public class TaskService {
           TaskDetail taskDetails = taskRepository.findById(taskId).orElse(null);
           if (taskDetails != null && !taskDetails.isExecuted()) {
             log.info(TASK_PROCESSED_LOG, taskDetails.getCreatedAt(), taskDetails.getContent());
+            calculateExecutionTimeAndLatency(taskDetails);
             taskDetails.setExecuted(true);
             taskRepository.save(taskDetails);
           }
         });
+  }
+
+  private static void calculateExecutionTimeAndLatency(TaskDetail taskDetails) {
+    taskDetails.setExecutedAt(LocalDateTime.now());
+    LocalDateTime currentTime = LocalDateTime.now();
+    long latencyInSeconds;
+
+    if (TimeType.EXACT_TIME.equals(taskDetails.getTimeType())) {
+      Duration diff = Duration.between(taskDetails.getExactTime(), currentTime);
+      latencyInSeconds = diff.getSeconds();
+    } else {
+      Duration diff = Duration.between(taskDetails.getCreatedAt(), currentTime);
+      long elapsedSeconds = diff.getSeconds();
+
+      if (TimeType.MINUTES.equals(taskDetails.getTimeType())) {
+        latencyInSeconds = elapsedSeconds - (taskDetails.getTime() * 60);
+      } else {
+        latencyInSeconds = elapsedSeconds - taskDetails.getTime();
+      }
+    }
+
+    taskDetails.setLatency(latencyInSeconds);
   }
 
   public TaskDetail scheduleTask(TaskDetail taskDetails) {
@@ -58,14 +81,21 @@ public class TaskService {
   }
 
   private long calculateDelay(TaskDetail taskDetails) {
-    long delay = taskDetails.getTime();
-    if (TimeType.MINUTES.equals(taskDetails.getTimeType())) {
-      delay = delay * 60;
-    } else if (TimeType.EXACT_TIME.equals(taskDetails.getTimeType())) {
-      Duration duration = Duration.between(LocalDateTime.now(), taskDetails.getExactTime());
-      delay = duration.isNegative() || duration.isZero() ? 0 : duration.getSeconds();
+    long delay;
+    LocalDateTime executionTime;
+
+    if (TimeType.EXACT_TIME.equals(taskDetails.getTimeType())) {
+      executionTime = taskDetails.getExactTime();
+    } else if (TimeType.MINUTES.equals(taskDetails.getTimeType())) {
+      executionTime = taskDetails.getCreatedAt().plusMinutes(taskDetails.getTime());
+    } else {
+      executionTime = taskDetails.getCreatedAt().plusSeconds(taskDetails.getTime());
     }
-    return delay;
+
+    Duration duration = Duration.between(LocalDateTime.now(), executionTime);
+    delay = duration.isNegative() || duration.isZero() ? 0 : duration.getSeconds();
+
+    return Math.max(delay, 0);
   }
 
   private void handleScheduledTask(TaskDetail taskDetails) {

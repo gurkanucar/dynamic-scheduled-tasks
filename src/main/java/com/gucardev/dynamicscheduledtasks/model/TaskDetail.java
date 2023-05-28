@@ -2,6 +2,7 @@ package com.gucardev.dynamicscheduledtasks.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,11 +27,8 @@ public class TaskDetail {
 
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(
-      name = "UUID",
-      strategy = "org.hibernate.id.UUIDGenerator"
-  )
-  @Type(type="uuid-char")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Type(type = "uuid-char")
   private UUID id;
 
   @CreationTimestamp private LocalDateTime createdAt;
@@ -39,6 +37,11 @@ public class TaskDetail {
 
   @Enumerated(EnumType.STRING)
   private TimeType timeType;
+
+  private LocalDateTime executedAt;
+
+  @Column(name = "latency_seconds")
+  private long latency;
 
   private long time;
   private boolean executed;
